@@ -67,12 +67,11 @@ Figures 4-8 in the paper can be reproduced by running the following scripts:
 * Figure 7: `python Figure_Intersects.py`
 * Figure 8: `python Figure_WellLogs.py` 
 
-
-![OrthogonalLines](https://github.com/GeoCode-polymtl/Mapping_SSP_NN/tree/main/code/figs/Figure_Orthogonal_lines.png)
-![ParallelLines1](https://github.com/GeoCode-polymtl/Mapping_SSP_NN/tree/main/code/figs/Figure_Parallel_lines_1.png)
-![ParallelLines2](https://github.com/GeoCode-polymtl/Mapping_SSP_NN/tree/main/code/figs/Figure_Parallel_lines_2.png)
-![Intersects](https://github.com/GeoCode-polymtl/Mapping_SSP_NN/tree/main/code/figs/Figure_Intersects.png)
-![WellLogs](https://github.com/GeoCode-polymtl/Mapping_SSP_NN/tree/main/code/figs/Figure_WellLogs.png)
+![OrthogonalLines](code/figs/Figure_Orthogonal_lines.png)
+![ParallelLines1](code/figs/Figure_Parallel_lines_1.png)
+![ParallelLines2](code/figs/Figure_Parallel_lines_2.png)
+![Intersects](code/figs/Figure_Intersects.png)
+![WellLogs](code/figs/Figure_WellLogs.png)
 
 ### Authors
 Jefferson Bustamante Restrepo (Polytechnique Montreal, Geological Survey of Canada), <br />
