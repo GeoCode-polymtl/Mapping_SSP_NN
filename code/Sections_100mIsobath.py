@@ -6,6 +6,25 @@ from obspy import Trace, Stream
 from obspy.core import AttribDict
 from obspy.io.segy.segy import SEGYTraceHeader, SEGYBinaryFileHeader
 import sys
+import argparse
+
+
+# %% Parameters
+parser = argparse.ArgumentParser()
+parser.add_argument('-ln','--linenumber',type=str,default='05-06',
+                    help='''Line number in the format 05-06 (ARAC survey number - line number), choose between
+                            ['04-01', '04-02', '04-08', '04-09', '04-10', '04-11', '05-01', '05-03', '05-05', '05-06', 
+                             '05-07', '05-08', '05-11', '05-12', '05-14', '05-15', '05-16', '05-17']''')
+
+args = parser.parse_args()
+linenumber = args.linenumber
+
+line_names = {'04-01':'ARA04C_line01','04-02':'ARA04C_line02','04-08':'ARA04C_line08',
+              '04-09':'ARA04C_line09','04-10':'ARA04C_line10','04-11':'ARA04C_line11',
+              '05-01':'ARA05C_line01','05-03':'ARA05C_line03','05-05':'ARA05C_line05',
+              '05-06':'ARA05C_line06','05-07':'ARA05C_line07','05-08':'ARA05C_line08',
+              '05-11':'ARA05C_line11','05-12':'ARA05C_line12','05-14':'ARA05C_line14',
+              '05-15':'ARA05C_line15','05-16':'ARA05C_line16','05-17':'ARA05C_line17'}
 
 'Isobath lims'
 indx_lims = {'ARA04C_line01': [236,1260,-1],
@@ -54,7 +73,8 @@ file_coords = {'ARA04C_line01': "%s/ARA04C_line01_int2_cmps.csv"%cords_folder,
                'ARA05C_line16': "%s/ARA05C_line16_ts_cmps.csv"%cords_folder,
                'ARA05C_line17': "%s/ARA05C_line17_ts_cmps.csv"%cords_folder}
 
-line = 'ARA04C_line09'
+# line = 'ARA04C_line09'
+line = line_names[linenumber]
 less_pars_NN = False
 dt = 2000 # in ms
 

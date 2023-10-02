@@ -2,8 +2,27 @@ from CNN_Utilities import *
 from TL_Utilities import *
 import argparse
 import matplotlib.pyplot as plt
-# import matplotlib.pyplot as plt
-os.environ["CUDA_VISIBLE_DEVICES"] = '0'
+
+
+# %% Parameters
+parser = argparse.ArgumentParser()
+parser.add_argument('-ln','--linenumber',type=str,default='05-06',
+                    help='''Line number in the format 05-06 (ARAC survey number - line number), choose between
+                          ['04-01', '04-02', '04-08', '04-09', '04-10', '04-11', '05-01', '05-03', '05-05', '05-06', 
+                           '05-07', '05-08', '05-11', '05-12', '05-14', '05-15', '05-16', '05-17']''')
+parser.add_argument('-gpu','--gpu',type=str,default=['0'],nargs='*',help='id number of the gpu(s) to use')
+
+args = parser.parse_args()
+linenumber = args.linenumber
+os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(args.gpu)     #"0"
+
+line_names = {'04-01':'ARA04C_line01_int2_bp','04-02':'ARA04C_line02_int2_bp','04-08':'ARA04C_line08_int2_bp',
+              '04-09':'ARA04C_line09_int2_bp','04-10':'ARA04C_line10_int2_bp','04-11':'ARA04C_line11_int2_bp',
+              '05-01':'ARA05C_line01_ts_bp','05-03':'ARA05C_line03_ts_bp','05-05':'ARA05C_line05_ts_bp',
+              '05-06':'ARA05C_line06_ts_bp','05-07':'ARA05C_line07_ts_bp','05-08':'ARA05C_line08_bp',
+              '05-11':'ARA05C_line11_ts_bp','05-12':'ARA05C_line12_ts_bp','05-14':'ARA05C_line14_ts_bp',
+              '05-15':'ARA05C_line15_ts_bp','05-16':'ARA05C_line16_ts_bp','05-17':'ARA05C_line17_ts_bp'}
+
 
 output_depth = '1500m'
 mult_outputs=True
@@ -11,7 +30,7 @@ outlabel = ['vp','vs','1/q']
 datatype = ['shotgather','dispersion','radon','fft_radon']
 key_nn = 'all'
 preprocessing = False
-line = 'ARA04C_line09_int2_bp'
+line = line_names[linenumber]
 itrains,ntrains = 0,64
 checkpoint_dir_tl = '../CheckpointsTL'
 
@@ -93,9 +112,8 @@ predicted_values = {ol:np.concatenate([pv[ol] for pv in predicted_values],axis=1
 plot_lims = {'vp':(1.4,4),'vs':(0,1.5),'1/q':(1e-2,1e-1)}
 fig, ax = plt.subplots(nrows=3, figsize=(3.5, 9),sharex='all')
 for i, ol in enumerate(outlabel):
-    # fig, ax = plt.subplots(nrows=1, figsize=(9, 3))
-    im0 = ax[i].imshow(gaussian_filter(np.average(predicted_values[ol], axis=0)[:, :].T,sigma=1), aspect='auto', cmap='jet',
-                       vmin=plot_lims[ol][0], vmax=plot_lims[ol][1],
+    im0 = ax[i].imshow(gaussian_filter(np.average(predicted_values[ol], axis=0)[:, :].T,sigma=1), aspect='auto',
+                       cmap='jet', vmin=plot_lims[ol][0], vmax=plot_lims[ol][1],
                        extent=[0, predicted_values[ol][0].shape[0] * ds / 1000, 700, 0])
     fig.colorbar(im0, ax=ax[i], label=ol.capitalize())
     ax[i].set_title(ol.capitalize())
