@@ -61,11 +61,11 @@ Again, please change the line number option `-ln` to the desired seismic line.
 
 Figures 4-8 in the paper can be reproduced by running the following scripts:
 
-* Figure 4: `python Figure_Parallel_lines_1.py`
-* Figure 5: `python Figure_Parallel_lines_2.py`
-* Figure 6: `python Figure_Orthogonal_lines.py`
-* Figure 7: `python Figure_Intersects.py`
-* Figure 8: `python Figure_WellLogs.py` 
+* Figure 5: `python Figure_Parallel_lines_1.py`
+* Figure 6: `python Figure_Parallel_lines_2.py`
+* Figure 7: `python Figure_Orthogonal_lines.py`
+* Figure 8: `python Figure_Intersects.py`
+* Figure 9: `python Figure_WellLogs.py` 
 
 ![OrthogonalLines](code/figs/Figure_Orthogonal_lines.png)
 ![ParallelLines1](code/figs/Figure_Parallel_lines_1.png)
