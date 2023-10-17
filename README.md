@@ -12,7 +12,7 @@ marine seismic and deep learning" submitted to JGR: Solid Earth. This work exten
 [Bustamante et al. 2023](#1) by evaluating the NN in 15 seismic lines from the ARA04C and ARA05C surveys in the Beaufort
 Sea [(Kang et al. 2023)](#2). The distribution of the seismic lines is shown in the following figure:
 
-![FigureMap](code/figs/Figure_MAp.png)
+![FigureMap](code/figs/Figure_Map.png)
 
 In addition, following predefined thresholds, this repository calculate the permafrost distribution in all the seismic 
 lines as described in the paper.
