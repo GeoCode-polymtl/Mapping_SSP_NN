@@ -1,10 +1,27 @@
 # Mapping Subsea Permafrost using deep learning
 
-This repository provides the code and results in "Mapping subsea permafrost distribution in the Beaufort Sea with marine 
-seismic and deep learning" submitted to JGR: Solid Earth
+## Background
+Mapping the distribution of subsea permafrost is a key step for understanding its impact on global warming. Although 
+conventional seismic techniques have been used to determine the lateral extent of subsea permafrost, they are limited 
+for evaluating its vertical variation in regional-scale mapping. However, the work of [Bustamante et al. 2023](#1) 
+presented a deep learning approach that enebled the generation of more reliable and accurate velocity and attenuation 
+models from seismic data using a multi-input multi-ouput NN and a transfer learning technique. 
 
-The repository contains 4 folders aiming to store the required information (CheckpointsTL, DataPreprocessed, InvertedModels 
-and SSPInterpretation) and 1 code folder. The data folders are as follows:
+This repository follows the code and results in "Mapping subsea permafrost distribution in the Beaufort Sea with
+marine seismic and deep learning" submitted to JGR: Solid Earth. This work extends the work of 
+[Bustamante et al. 2023](#1) by evaluating the NN in 15 seismic lines from the ARA04C and ARA05C surveys in the Beaufort
+Sea [(Kang et al. 2023)](#2). The distribution of the seismic lines is shown in the following figure:
+
+![FigureMap](code/figs/Figure_MAp.png)
+
+In addition, following predefined thresholds, this repository calculate the permafrost distribution in all the seismic 
+lines as described in the paper.
+
+
+## Folder structure
+
+The repository contains 4 folders aiming to store the required information (CheckpointsTL, DataPreprocessed, 
+InvertedModels and SSPInterpretation) and 1 code folder. The data folders are as follows:
 
 * `Checkpoints`: Store the last checkpoint on the TL methodology
 * `Datapreprocessed`: Store de seismic lines aranged in CMPs. 
@@ -26,6 +43,10 @@ InvertedModels/VP_models.
 
 The requiements for running the scripts are summarized in the file requirements.txt. Note that the package GeoFlow is 
 available in https://github.com/gfabieno/GeoFlow
+
+In addition to the code and data, the `WellLogs` folder contains the crystal cable logs in wells Irkaluk B-35, Kopanoar 
+M-13, and Nektoralik K-59 used in the paper. 
+
 
 ## Running the code
 
@@ -59,22 +80,44 @@ Again, please change the line number option `-ln` to the desired seismic line.
 
 ## Figures
 
-Figures 4-8 in the paper can be reproduced by running the following scripts:
+Figures 5-7 in the paper can be reproduced by running the following scripts:
 
 * Figure 5: `python Figure_Parallel_lines_1.py`
 * Figure 6: `python Figure_Parallel_lines_2.py`
 * Figure 7: `python Figure_Orthogonal_lines.py`
-* Figure 8: `python Figure_Intersects.py`
-* Figure 9: `python Figure_WellLogs.py` 
 
-![OrthogonalLines](code/figs/Figure_Orthogonal_lines.png)
+These figures show the inverted velocity and attenuation models evaluated in the seismic lines parallel (Figures 5-6) 
+and orthogonal (Figure 7) to the shelf.
+ 
 ![ParallelLines1](code/figs/Figure_Parallel_lines_1.png)
 ![ParallelLines2](code/figs/Figure_Parallel_lines_2.png)
+![OrthogonalLines](code/figs/Figure_Orthogonal_lines.png)
+
+The prediction at the intersection between different seismic lines is shown in Figure 8. To reproduce this figure, run
+* Figure 8: `python Figure_Intersects.py`
 ![Intersects](code/figs/Figure_Intersects.png)
+
+In addition, Figure 9 compared the inverted P-wave velocity models with crystal cable logs collected in wells close to
+the seismic lines. To reproduce this figure, run
+* Figure 9: `python Figure_WellLogs.py` 
 ![WellLogs](code/figs/Figure_WellLogs.png)
+
+The code also generate the corresponding `.sgy` file for each seismic line. Te fence diagrams displayed on the paper 
+can be easily visualized using 3D seismic visualization software such as OpendTect 
+(https://www.opendtect.org/osr/Main/HomePage).
 
 ### Authors
 Jefferson Bustamante Restrepo (Polytechnique Montreal, Geological Survey of Canada), <br />
 Gabriel Fabien-Ouellet (Polytechnique Montreal), <br />
 Mathieu Duchesne (Geological Survey of Canada), <br />
 Amr Ibrahim (Polytechnique Montreal),
+
+### References
+<a id="1">[1]</a> 
+Bustamante, J., Fabien-Ouellet, G., Duchesne, M.J. and Ibrahim, A., 2023. Deeplearning viscoelastic seismic inversion 
+for mapping subsea permafrost. Geophysics, Submitted
+
+<a id="2">[2]</a> 
+Kang Seung-Goo, Young Keun Jin, Jongkuk Hong, 2023. Geophysical data (multi channel seismic data) collected during the 
+2013 ARA04C and 2014 ARA05C expeditions on the Beaufort sea. 
+Available at: https://doi.org/10.22663/kopri-kpdc-00002217.1.
