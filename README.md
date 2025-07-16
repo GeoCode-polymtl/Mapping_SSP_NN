@@ -1,15 +1,15 @@
 # Mapping Subsea Permafrost using deep learning
 
 ## Background
-Mapping the distribution of subsea permafrost is a key step for understanding its impact on global warming. Although 
-conventional seismic techniques have been used to determine the lateral extent of subsea permafrost, they are limited 
-for evaluating its vertical variation in regional-scale mapping. However, the work of [Bustamante et al. 2023](#1) 
+Mapping the distribution of subsea permafrost is a key step for understanding its potential impact on global warming. 
+Although conventional seismic techniques have been used to determine the lateral extent of subsea permafrost, they are 
+limited for evaluating its vertical variation in regional-scale mapping. However, the work of [Bustamante et al. 2024](#1) 
 presented a deep learning approach that enebled the generation of more reliable and accurate velocity and attenuation 
 models from seismic data using a multi-input multi-ouput NN and a transfer learning technique. 
 
-This repository follows the code and results in "Mapping subsea permafrost distribution in the Beaufort Sea with
-marine seismic and deep learning" submitted to JGR: Solid Earth. This work extends the work of 
-[Bustamante et al. 2023](#1) by evaluating the NN in 15 seismic lines from the ARA04C and ARA05C surveys in the Beaufort
+This repository follows the code and results in "Mapping subsea permafrost distribution in the Canadian Beaufort Sea 
+with marine seismic and deep learning" submitted to JGR: Solid Earth. This work extends the work of 
+[Bustamante et al. 2024](#1) by evaluating the NN in 15 seismic lines from the ARA04C and ARA05C surveys in the Beaufort
 Sea [(Kang et al. 2023)](#2). The distribution of the seismic lines is shown in the following figure:
 
 ![FigureMap](code/figs/Figure_Map.png)
@@ -39,7 +39,9 @@ data. There are two main files to consider:
 exist. It also generates the output file in InvertedModels/TL subfolder
 * `Sections_100mIsobath.py`: Generate the interpeted sections of permafrost distribution in the sesimic lines and store 
 them in the folder SSPInterpretation. In addition, it saves the Average Vp velocity models in the subfolder 
-InvertedModels/VP_models.
+InvertedModels/VP_models, and the permafrost parameters (top, bop, thickness, inveted values at the middle of the 
+interpreted upper ssp layer, and the maximum Vp and Vs) and the interpreted permafrost distribution in the 
+SSPInterpretation folder.
 
 The requiements for running the scripts are summarized in the file requirements.txt. Note that the package GeoFlow is 
 available in https://github.com/gfabieno/GeoFlow
@@ -69,7 +71,9 @@ seismic lines in the ARA04C and ARA05C surveys.
 
 `Sections_100mIsobath.py` generates the interpeted sections of permafrost distribution in the 100m isobath for the 
 evaluated sesimic lines and store them in the folder `SSPInterpretation`. In addition, it saves the Average Vp velocity 
-models in the subfolder `InvertedModels/VP_models`. The script can be run as follows:
+models in the subfolder `InvertedModels/VP_models`, and the permafrost parameters (top, bop, thickness, inverted values 
+at the middle of the interpreted upper ssp layer, and the maximum Vp and Vs) and the interpreted permafrost distribution 
+in the SSPInterpretation folder. The script can be run as follows:
 
 ```bash
 cd code
@@ -77,23 +81,14 @@ python Sections_100mIsobath.py -ln 05-06
 ```
 Again, please change the line number option `-ln` to the desired seismic line.
 
+`Sections_100mIsobath.py` will also generate the figures for the inverted parameters and upper permafrost layer 
+interpretation as well as the resulting parameters at the mid-point of the upper permafrost layer. 
 
-## Figures
+![Inverte0401](code/figs/Inverted04-01.png)
+![MidPointPars](code/figs/Figure_PermafrostParameters.png)
 
-Figures 5-7 in the paper can be reproduced by running the following scripts:
 
-* Figure 5: `python Figure_Parallel_lines_1.py`
-* Figure 6: `python Figure_Parallel_lines_2.py`
-* Figure 7: `python Figure_Orthogonal_lines.py`
-
-These figures show the inverted velocity and attenuation models evaluated in the seismic lines parallel (Figures 5-6) 
-and orthogonal (Figure 7) to the shelf.
- 
-![ParallelLines1](code/figs/Figure_Parallel_lines_1.png)
-![ParallelLines2](code/figs/Figure_Parallel_lines_2.png)
-![OrthogonalLines](code/figs/Figure_Orthogonal_lines.png)
-
-The prediction at the intersection between different seismic lines is shown in Figure 8. To reproduce this figure, run
+The prediction at the intersection between different seismic lines is shown in Figure 9. To reproduce this figure, run
 * Figure 8: `python Figure_Intersects.py`
 ![Intersects](code/figs/Figure_Intersects.png)
 
@@ -102,7 +97,7 @@ the seismic lines. To reproduce this figure, run
 * Figure 9: `python Figure_WellLogs.py` 
 ![WellLogs](code/figs/Figure_WellLogs.png)
 
-The code also generate the corresponding `.sgy` file for each seismic line. Te fence diagrams displayed on the paper 
+The code also generate the corresponding `.sgy` file for each seismic line. The fence diagrams displayed on the paper 
 can be easily visualized using 3D seismic visualization software such as OpendTect 
 (https://www.opendtect.org/osr/Main/HomePage).
 
@@ -114,8 +109,8 @@ Amr Ibrahim (Polytechnique Montreal),
 
 ### References
 <a id="1">[1]</a> 
-Bustamante, J., Fabien-Ouellet, G., Duchesne, M.J. and Ibrahim, A., 2023. Deeplearning viscoelastic seismic inversion 
-for mapping subsea permafrost. Geophysics, Submitted
+Bustamante, J., Fabien-Ouellet, G., Duchesne, M. J., & Ibrahim, A. (2024). Deep-learning viscoelastic seismic inversion 
+for mapping subsea permafrost. Geophysics, 89(4), R339-R353.
 
 <a id="2">[2]</a> 
 Kang Seung-Goo, Young Keun Jin, Jongkuk Hong, 2023. Geophysical data (multi channel seismic data) collected during the 
