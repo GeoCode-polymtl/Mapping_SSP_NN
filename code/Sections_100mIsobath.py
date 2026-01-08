@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import h5py as h5
 
-from scipy.ndimage import gaussian_filter
+from scipy.ndimage import gaussian_filter,gaussian_filter1d
 from obspy import Trace, Stream
 from obspy.core import AttribDict
 from obspy.io.segy.segy import SEGYTraceHeader, SEGYBinaryFileHeader
@@ -13,11 +13,12 @@ import argparse
 import pandas as pd
 import matplotlib.pylab as pl
 from matplotlib.colors import ListedColormap
+from matplotlib.patches import ConnectionPatch
 
 
 # %% Parameters
 parser = argparse.ArgumentParser()
-parser.add_argument('-ln','--linenumber',type=str,default='05-06',
+parser.add_argument('-ln','--linenumber',type=str,default='04-01',
                     help='''Line number in the format 05-06 (ARAC survey number - line number), choose between
                             ['04-01', '04-02', '04-08', '04-09', '04-10', '04-11', '05-01', '05-03', '05-05', '05-06', 
                              '05-07', '05-08', '05-11', '05-12', '05-14', '05-15', '05-16', '05-17']''')
@@ -48,24 +49,24 @@ indx_lims = {'ARA04C_line01': [236,1260,-1],
              'ARA05C_line16': [615,1315],
              'ARA05C_line17': [0,1026]}
 'Velocity files'
-vel_files = {'ARA04C_line01':'../InvertedModels/TL/ARA04C_line01_int2_bp_TL_vel.mat',
-             'ARA04C_line02':'../InvertedModels/TL/ARA04C_line02_int2_bp_TL_vel.mat',
-             'ARA04C_line08':'../InvertedModels/TL/ARA04C_line08_int2_bp_TL_vel.mat',
-             'ARA04C_line09':'../InvertedModels/TL/ARA04C_line09_int2_bp_TL_vel.mat',
-             'ARA04C_line10':'../InvertedModels/TL/ARA04C_line10_int2_bp_TL_vel.mat',
-             'ARA04C_line11':'../InvertedModels/TL/ARA04C_line11_int2_bp_TL_vel.mat',
-             'ARA05C_line01':'../InvertedModels/TL/ARA05C_line01_ts_bp_TL_vel.mat',
-             'ARA05C_line03':'../InvertedModels/TL/ARA05C_line03_ts_bp_TL_vel.mat',
-             'ARA05C_line05':'../InvertedModels/TL/ARA05C_line05_ts_bp_TL_vel.mat',
-             'ARA05C_line06':'../InvertedModels/TL/ARA05C_line06_ts_bp_TL_vel.mat',
-             'ARA05C_line07':'../InvertedModels/TL/ARA05C_line07_ts_bp_TL_vel.mat',
-             'ARA05C_line08':'../InvertedModels/TL/ARA05C_line08_bp_TL_vel.mat',
-             'ARA05C_line11':'../InvertedModels/TL/ARA05C_line11_ts_bp_TL_vel.mat',
-             'ARA05C_line16':'../InvertedModels/TL/ARA05C_line16_ts_bp_TL_vel.mat',
-             'ARA05C_line17':'../InvertedModels/TL/ARA05C_line17_ts_bp_TL_vel.mat'}
+vel_files = {'ARA04C_line01':'../../InvertedModels/TL/ARA04C_line01_int2_bp_TL_vel.mat',
+             'ARA04C_line02':'../../InvertedModels/TL/ARA04C_line02_int2_bp_TL_vel.mat',
+             'ARA04C_line08':'../../InvertedModels/TL/ARA04C_line08_int2_bp_TL_vel.mat',
+             'ARA04C_line09':'../../InvertedModels/TL/ARA04C_line09_int2_bp_TL_vel.mat',
+             'ARA04C_line10':'../../InvertedModels/TL/ARA04C_line10_int2_bp_TL_vel.mat',
+             'ARA04C_line11':'../../InvertedModels/TL/ARA04C_line11_int2_bp_TL_vel.mat',
+             'ARA05C_line01':'../../InvertedModels/TL/ARA05C_line01_ts_bp_TL_vel.mat',
+             'ARA05C_line03':'../../InvertedModels/TL/ARA05C_line03_ts_bp_TL_vel.mat',
+             'ARA05C_line05':'../../InvertedModels/TL/ARA05C_line05_ts_bp_TL_vel.mat',
+             'ARA05C_line06':'../../InvertedModels/TL/ARA05C_line06_ts_bp_TL_vel.mat',
+             'ARA05C_line07':'../../InvertedModels/TL/ARA05C_line07_ts_bp_TL_vel.mat',
+             'ARA05C_line08':'../../InvertedModels/TL/ARA05C_line08_bp_TL_vel.mat',
+             'ARA05C_line11':'../../InvertedModels/TL/ARA05C_line11_ts_bp_TL_vel.mat',
+             'ARA05C_line16':'../../InvertedModels/TL/ARA05C_line16_ts_bp_TL_vel.mat',
+             'ARA05C_line17':'../../InvertedModels/TL/ARA05C_line17_ts_bp_TL_vel.mat'}
 
 'Coordinates files'
-cords_folder = "../DataPreprocessed/CMPs_coords"
+cords_folder = "../../DataPreprocessed/CMPs_coords"
 file_coords = {'ARA04C_line01': "%s/ARA04C_line01_int2_cmps.csv"%cords_folder,
                'ARA04C_line02': "%s/ARA04C_line02_int2_cmps.csv"%cords_folder,
                'ARA04C_line08': "%s/ARA04C_line08_int2_cmps.csv"%cords_folder,
@@ -166,8 +167,8 @@ permafrost[mask2] = 0.5
 if indx_lims[line][1] == -1: indx_lims[line][1] = permafrost.shape[1]
 plot_permafrost(gaussian_filter(permafrost,sigma=(0,3))[:160,:], indx_lims, line)
 
+permafrost_c = copy.copy(permafrost)
 if cleanup:
-    permafrost_c = copy.copy(permafrost)
     if line == 'ARA05C_line17':
         permafrost_c[52:,:250] = 0; permafrost_c[55:,250:550] = 0; permafrost_c[60:,550:700]=0; permafrost_c[52:,750:] = 0
         permafrost_c[70:,700:750]=0
@@ -237,6 +238,14 @@ if write_vel_files:
     write_segy((line_vel_av['1/q'])[:160, indx_lims[line][0]:indx_lims[line][1]].astype(np.float32),
                coords[indx_lims[line][0]:indx_lims[line][1], :], filename=filename_1q)
 
+# %% Seafloor
+
+sediments = np.ones(line_vel_av['vp'].shape)
+mask = (line_vel_av['vp'] < 1.6) & (line_vel_av['vs'] < 0.4)
+sediments[mask] = 0
+
+sf_idx = first_nonzero(sediments[:160,:], axis=0, invalid_val=np.nan).astype(int)[indx_lims[line][0]:indx_lims[line][1]]
+sf = (sf_idx*2.5)
 # %% Permafrost boundaries
 
 top_idx = first_nonzero(permafrost_c[:160,:], axis=0, invalid_val=0).astype(int)[indx_lims[line][0]:indx_lims[line][1]]
@@ -247,61 +256,71 @@ bop = (bop_idx*2.5)
 xs = np.arange(0,(indx_lims[line][1] - indx_lims[line][0]) * 50e-3,50e-3)
 mask = top>0
 
-if linenumber=='04-01':
-    fig, ax = plt.subplots(nrows=4,figsize=(9, 3.5*4))
-    im0 = ax[0].imshow(gaussian_filter(line_vel_av['vp'][:160, indx_lims[line][0]:indx_lims[line][1]],sigma=(3,3)),
-                       aspect='auto', cmap='jet', vmin=1.5,
-                       vmax=3.7, extent=[0, (indx_lims[line][1] - indx_lims[line][0]) * 50e-3, 400, 0])
-    fig.colorbar(im0, ax=ax[0], label='$V_p$ (km/s)')
+fig, ax = plt.subplots(nrows=4,figsize=(9, 3.5*4))
+im0 = ax[0].imshow(gaussian_filter(line_vel_av['vp'][:160, indx_lims[line][0]:indx_lims[line][1]],sigma=(3,3)),
+                   aspect='auto', cmap='jet', vmin=1.5,
+                   vmax=3.5, extent=[0, (indx_lims[line][1] - indx_lims[line][0]) * 50e-3, 400, 0])
+fig.colorbar(im0, ax=ax[0], label='$V_p$ (km/s)')
 
-    im1 = ax[1].imshow(gaussian_filter(line_vel_av['vs'][:160, indx_lims[line][0]:indx_lims[line][1]],sigma=(3,3)),
-                       aspect='auto', cmap='jet', vmin=0.4,
-                       vmax=1.5, extent=[0, (indx_lims[line][1] - indx_lims[line][0]) * 50e-3, 400, 0])
-    fig.colorbar(im1, ax=ax[1], label='$V_s$ (km/s)')
+im1 = ax[1].imshow(gaussian_filter(line_vel_av['vs'][:160, indx_lims[line][0]:indx_lims[line][1]],sigma=(3,3)),
+                   aspect='auto', cmap='jet', vmin=0.4,
+                   vmax=1.5, extent=[0, (indx_lims[line][1] - indx_lims[line][0]) * 50e-3, 400, 0])
+fig.colorbar(im1, ax=ax[1], label='$V_s$ (km/s)')
 
-    im2 = ax[2].imshow(gaussian_filter(line_vel_av['1/q'][:160, indx_lims[line][0]:indx_lims[line][1]],sigma=(3,3)),
-                       aspect='auto', cmap='jet', vmin=0.005,
-                       vmax=0.05, extent=[0, (indx_lims[line][1] - indx_lims[line][0]) * 50e-3, 400, 0])
+im2 = ax[2].imshow(gaussian_filter(line_vel_av['1/q'][:160, indx_lims[line][0]:indx_lims[line][1]],sigma=(3,3)),
+                   aspect='auto', cmap='plasma', vmin=0.005,
+                   vmax=0.04, extent=[0, (indx_lims[line][1] - indx_lims[line][0]) * 50e-3, 400, 0])
 
-    cmap = pl.cm.jet
-    mycmap = cmap(np.arange(cmap.N))
-    mycmap[:20,-1] = 0
-    mycmap[20:40,-1] = np.arange(0,1,.05)
-    mycmap = ListedColormap(mycmap)
-    fig.colorbar(im2, ax=ax[2], label='1/Q')
-    im3 = ax[3].imshow(permafrost[:160, indx_lims[line][0]:indx_lims[line][1]], aspect='auto', cmap=mycmap, vmin=0, vmax=1,
-                       extent=[0, (indx_lims[line][1] - indx_lims[line][0]) * 50e-3, 400, 0])
-    cbar = fig.colorbar(im3, ax=ax[3],ticks=[.5,1]) #,label='Permafrost distribution')
-    cbar.ax.set_yticklabels(['Ice\nbearing','Ice\nbonded'])
+cmap = pl.cm.jet
+mycmap = cmap(np.arange(cmap.N))
+mycmap[:20,-1] = 0
+mycmap[20:40,-1] = np.arange(0,1,.05)
+mycmap = ListedColormap(mycmap)
+fig.colorbar(im2, ax=ax[2], label='1/Q')
+im3 = ax[3].imshow(permafrost[:160, indx_lims[line][0]:indx_lims[line][1]], aspect='auto', cmap=mycmap, vmin=0, vmax=1,
+                   extent=[0, (indx_lims[line][1] - indx_lims[line][0]) * 50e-3, 400, 0])
+cbar = fig.colorbar(im3, ax=ax[3],ticks=[0,.5,1]) #,label='Permafrost distribution')
+cbar.ax.set_yticklabels(['Ice free','Ice\nbearing','Ice\nbonded'])
 
 
-    ax[3].set_xlabel('Distance (km)')
-    [axi.plot(xs[mask],top[mask],'m.',label='ToP',ms=3.5) for axi in ax[:]]
-    [axi.plot(xs[mask],bop[mask],'k.',label='BoP (first layer)',ms=3.5) for axi in ax[:]]
-    [axi.legend(facecolor='w',framealpha=1) for axi in ax[:-1]]
-    [axi.set_ylabel('Depth (m)') for axi in ax]
-    [axi.set_title(s) for axi,s in zip(ax,['a)','b)','c)','d)'])]
-    if linenumber == '04-01':
-        ax[0].annotate('SE',xy=(51,25),xytext=(46,25),ha='center',va='center',c='w', fontsize=14,
-                       arrowprops=dict(arrowstyle='->',color='w',lw=3))
-        ax[0].annotate('NW',xy=(0,25),xytext=(5,25),ha='center',va='center',c='w', fontsize=14,
-                       arrowprops=dict(arrowstyle='->',color='w',lw=3))
-        plt.savefig('figs/Inverted04-01.png',dpi=300,bbox_inches='tight')
-    plt.show()
+ax[3].set_xlabel('Distance (km)')
+[axi.plot(xs,gaussian_filter1d(sf,sigma=3),'silver',label='Sea floor') for axi in ax[:]]
+[axi.plot(xs[mask],top[mask],'g.',label='ToP',ms=3.5) for axi in ax[:]]
+[axi.plot(xs[mask],bop[mask],'k.',label='BoP (first layer)',ms=3.5) for axi in ax[:]]
+[axi.legend(facecolor='w',framealpha=1) for axi in ax[:-1]]
+[axi.set_ylabel('Depth (m)') for axi in ax]
+[axi.set_title(s) for axi,s in zip(ax,['a)','b)','c)','d)'])]
+if linenumber == '04-01':
+    ax[0].annotate('SE',xy=(51,25),xytext=(46,25),ha='center',va='center',c='w', fontsize=14,
+                   arrowprops=dict(arrowstyle='->',color='w',lw=3))
+    ax[0].annotate('NW',xy=(0,25),xytext=(5,25),ha='center',va='center',c='w', fontsize=14,
+                   arrowprops=dict(arrowstyle='->',color='w',lw=3))
+    # ax[0].arrow(x=20,y=380,dx=2,dy=0,fc='w',ec='w',shape='right',lw=1)
+    ax[0].annotate('',xy=(22,380),xytext=(18,380),ha='center',va='center',c='darkgreen', fontsize=14,
+                   arrowprops=dict(arrowstyle='->',color='darkgreen',lw=3))
+    ax[1].annotate('', xy=(22, 380), xytext=(18, 380), ha='center', va='center', c='darkgreen', fontsize=14,
+                   arrowprops=dict(arrowstyle='->', color='darkgreen', lw=3))
+    ax[2].annotate('', xy=(39, 380), xytext=(35, 380), ha='center', va='center', c='darkgreen', fontsize=14,
+                   arrowprops=dict(arrowstyle='->', color='darkgreen', lw=3))
+    ax[3].annotate('', xy=(22, 380), xytext=(18, 380), ha='center', va='center', c='darkgreen', fontsize=14,
+                   arrowprops=dict(arrowstyle='->', color='darkgreen', lw=3))
+    plt.savefig('figs/Inverted04-01.png',dpi=300,bbox_inches='tight')
+plt.show()
 
 # %% Thickness and velocities
 pthick = bop-top
 pthick[~mask] = 0
 mid_idx = ((bop_idx-top_idx)/2+top_idx).astype(int)
 
+max_vp,min_vp = np.zeros(top.shape), np.zeros(top.shape)
+max_vs,min_vs = np.zeros(top.shape), np.zeros(top.shape)
+mid_1q,mid_vp,mid_vs = np.zeros(top.shape),np.zeros(top.shape),np.zeros(top.shape)
+
 if linenumber=='04-01':
     fig, ax = plt.subplots(figsize=(9, 3.5*4),nrows=4,sharex=True)
     ax[0].plot(xs,pthick,'-',label='Permafrost thickness')
     ax[0].set_ylabel('Thickness (m)',size=12)
 
-    max_vp,min_vp = np.zeros(top.shape), np.zeros(top.shape)
-    max_vs,min_vs = np.zeros(top.shape), np.zeros(top.shape)
-    mid_1q,mid_vp,mid_vs = np.zeros(top.shape),np.zeros(top.shape),np.zeros(top.shape)
     for i in range(len(top)):
         if top_idx[i] == 0:
             max_vp[i],min_vp[i],max_vs[i],min_vs[i] = [line_vel_av[key][:160,indx_lims[line][0]:indx_lims[line][1]][40,i]
@@ -349,6 +368,28 @@ if linenumber=='04-01':
 
     [axi.set_title(t,size=14) for axi,t in zip(ax,['a)','b)','c)','d)'])]
 
+    con1 = ConnectionPatch(xyA=(0,90), coordsA=ax[0].transData,
+                          xyB=(0,0.0175), coordsB=ax[3].transData,
+                          color='y',ls='--')
+    fig.add_artist(con1)
+    con2 = ConnectionPatch(xyA=(10, 90), coordsA=ax[0].transData,
+                          xyB=(10, 0.0175), coordsB=ax[3].transData,
+                          color='y', ls='--')
+    fig.add_artist(con2)
+    ax[0].plot([0,10],[90,90],color='y',ls='--')
+    ax[3].plot([0,10], [.0175,.0175], color='y', ls='--')
+
+    con3 = ConnectionPatch(xyA=(15, 90), coordsA=ax[0].transData,
+                           xyB=(15, 0.0175), coordsB=ax[3].transData,
+                           color='r', ls='--')
+    fig.add_artist(con3)
+    con4 = ConnectionPatch(xyA=(45, 90), coordsA=ax[0].transData,
+                           xyB=(45, 0.0175), coordsB=ax[3].transData,
+                           color='r', ls='--')
+    fig.add_artist(con4)
+    ax[0].plot([15, 45], [90, 90], color='r', ls='--')
+    ax[3].plot([15, 45], [.0175, .0175], color='r', ls='--')
+
     plt.savefig('figs/Figure_PermafrostParameters.png',dpi=300,bbox_inches='tight')
     plt.show()
 
@@ -372,8 +413,13 @@ permafrost_par = {'cmp' : coords[indx_lims[line][0]:indx_lims[line][1],0],
 permafrost_dist = {'cmp': coords[indx_lims[line][0]:indx_lims[line][1],0],
                    'x':coords[indx_lims[line][0]:indx_lims[line][1],1],
                    'y':coords[indx_lims[line][0]:indx_lims[line][1],2],
-                   'permafrost_state' : permafrost_state[indx_lims[line][0]:indx_lims[line][1]]}
-
+                   'permafrost_state' : permafrost_state[indx_lims[line][0]:indx_lims[line][1]]
+                   }
+sea_floor = {'Line' : line.replace('_line','-'),
+             'x' : coords[indx_lims[line][0]:indx_lims[line][1],1],
+             'y' : coords[indx_lims[line][0]:indx_lims[line][1],2],
+             'seafloor' : gaussian_filter1d(sf,sigma=3),
+             'cmp': coords[indx_lims[line][0]:indx_lims[line][1],0],}
 # %% Writing csv files
 write_csv = True
 if write_csv:
@@ -381,3 +427,5 @@ if write_csv:
     df.to_csv('../SSPInterpretation/%s_permafrost_parameters.csv'%line,index=False)
     df2 = pd.DataFrame(permafrost_dist)
     df2.to_csv('../SSPInterpretation/%s_permafrost_distribution.csv'%line,index=False)
+    df3 = pd.DataFrame(sea_floor)
+    df3.to_csv('../SeaFloor/%s_SeaFloor.csv'%line,index=False)

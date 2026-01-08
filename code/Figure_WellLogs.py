@@ -3,13 +3,13 @@ import h5py as h5
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-vel_files = {'ARA05C_11':'../InvertedModels/TL/ARA05C_line11_ts_bp_TL_vel.mat',
-             'ARA05C_08':'../InvertedModels/TL/ARA05C_line08_bp_TL_vel.mat',
-             'ARA05C_06':'../InvertedModels/TL/ARA05C_line06_ts_bp_TL_vel.mat',
-             'ARA04C_10': '../InvertedModels/TL/ARA04C_line10_int2_bp_TL_vel.mat',
-             'ARA05C_17':'../InvertedModels/TL/ARA05C_line17_ts_bp_TL_vel.mat',
-             'ARA05C_03': '../InvertedModels/TL/ARA05C_line03_ts_bp_TL_vel.mat',
-             'ARA04C_01':'../InvertedModels/TL/ARA04C_line01_int2_bp_TL_vel.mat'
+vel_files = {'ARA05C_11':'../../InvertedModels/TL/ARA05C_line11_ts_bp_TL_vel.mat',
+             'ARA05C_08':'../../InvertedModels/TL/ARA05C_line08_bp_TL_vel.mat',
+             'ARA05C_06':'../../InvertedModels/TL/ARA05C_line06_ts_bp_TL_vel.mat',
+             'ARA04C_10': '../../InvertedModels/TL/ARA04C_line10_int2_bp_TL_vel.mat',
+             'ARA05C_17':'../../InvertedModels/TL/ARA05C_line17_ts_bp_TL_vel.mat',
+             'ARA05C_03': '../../InvertedModels/TL/ARA05C_line03_ts_bp_TL_vel.mat',
+             'ARA04C_01':'../../InvertedModels/TL/ARA04C_line01_int2_bp_TL_vel.mat'
              }
 
 isobath_lims = {'ARA05C_06': [116,-1],'ARA05C_08': [15,515], 'ARA05C_11': [0,-1], 'ARA04C_10': [0,-1],
@@ -57,6 +57,9 @@ vps['K59'] = np.array([1.43,1.429055599,1.535779523,1.72353197,1.80892063,1.9658
                        1.599653714])
 ys['K59'] = np.array([261.2136,276.4536,291.6936,309.9816,328.2696,349.6056,370.9416,392.2776,410.5656])
 
+vps['K59_c'] = np.array([1.595811518,1.78245614,1.693333333])
+ys['K59_c'] = np.array([170,200,231])
+
 K59_5C11 = (187 - isobath_lims['ARA05C_11'][0])
 K59_5C08 = (len(data['ARA05C_08']['vp'][1]) - (493 - isobath_lims['ARA05C_08'][0]))
 M13_5C06 = (803 - isobath_lims['ARA05C_06'][0])
@@ -65,15 +68,31 @@ B35_5C17 = (819 - isobath_lims['ARA05C_17'][0])
 B35_5C03 = (1792 - isobath_lims['ARA05C_03'][0])
 B35_4C01 = (1081 - isobath_lims['ARA04C_01'][0])
 
+# %% Seafloor
+'Seafloor files'
+sf_folder = '../SeaFloor'
+sf_files = {key: '%s/%s'%(sf_folder,key.replace('C_','C_line')+'_SeaFloor.csv')
+            for key in vel_files}
+
+nearcmp = {'K59_0511':1604,'K59_0508':4548,
+        'M13_0506':6524,'M13_0410':4756,
+        'B35_0517':6676,'B35_0503':14452,'B35_0401':8764}
 
 # %% Plot 2
 fig, ax = plt.subplots(ncols=7,sharey='all', sharex='all', figsize=(8,3))
 lc = 'w'#'silver'
 'K59 vs 5C-11'
+sf_0511 = np.genfromtxt(sf_files['ARA05C_11'], delimiter=',')
+sf_0511[np.isnan(sf_0511)] = 0
+sf_idx = np.argmin(np.abs(sf_0511[:,4] - nearcmp['K59_0511']))
 ax[0].imshow(data['ARA05C_11']['vp'][:160,K59_5C11-5:K59_5C11+5],aspect='auto',vmin=1.4,vmax=3.5,
-             extent=[0,0.5,400,0],cmap='jet')
+             extent=[0,0.5,400,0],cmap='jet',interpolation='bilinear')
 temp = (2*(vps['K59']-1.4)/(3.7-1.4)-1)*.2+.25
 ax[0].plot(temp,ys['K59'],lc)
+tempc = (2*(vps['K59_c']-1.4)/(3.7-1.4)-1)*.2+.25
+ax[0].plot(tempc,ys['K59_c'],lc,ls=':')
+ax[0].plot([0,.5], [sf_0511[sf_idx,3], sf_0511[sf_idx,3]],'grey',ls='--',lw=.75)
+ax[0].plot([0.25,0.25],[64,159.95],lw=1,c='k',ls='--')
 ax[0].set_ylim([400,0])
 ax[0].set_ylabel('Depth (m)',size=8)
 ax[0].set_yticks(np.arange(0,401,100))
@@ -81,47 +100,81 @@ ax[0].set_yticklabels(np.arange(0,401,100),fontsize=8)
 # ax[0].set_xlim([1.3,3.7])
 
 'K59 vs 5C-08'
+sf_0508 = np.genfromtxt(sf_files['ARA05C_08'], delimiter=',')
+sf_0508[np.isnan(sf_0508)] = 0
+sf_idx = np.argmin(np.abs(sf_0508[:,4] - nearcmp['K59_0508']))
 ax[1].imshow(data['ARA05C_08']['vp'][:160,K59_5C08-5:K59_5C08+5],aspect='auto',vmin=1.4,vmax=3.5,
-             extent=[0,0.5,400,0],cmap='jet')
+             extent=[0,0.5,400,0],cmap='jet',interpolation='bilinear')
 ax[1].plot(temp,ys['K59'],lc)
-[axi.text(.05,250,'1.4\n|', ha='center', c=lc,size=8) for axi in ax[:2]]
-[axi.text(.45,250,'3.7\n|', ha='center', c=lc,size=8) for axi in ax[:2]]
-[axi.text(.25,200,'K-59\nVp (km/s)', ha='center', c=lc,size=8) for axi in ax[:2]]
+ax[1].plot(tempc,ys['K59_c'],lc,ls=':')
+ax[1].plot([0,.5], [sf_0508[sf_idx,3], sf_0508[sf_idx,3]],'grey',ls='--',lw=.75)
+ax[1].plot([0.25,0.25],[64,159.95],lw=1,c='k',ls='--')
+# [axi.text(.05,250,'1.4\n|', ha='center', c=lc,size=8) for axi in ax[:2]]
+# [axi.text(.45,250,'3.7\n|', ha='center', c=lc,size=8) for axi in ax[:2]]
+# [axi.text(.25,200,'K-59\nVp (km/s)', ha='center', c=lc,size=8) for axi in ax[:2]]
+[axi.text(.05,75,'1.4\n|', ha='center', c=lc,size=8) for axi in ax[:2]]
+[axi.text(.45,75,'3.7\n|', ha='center', c=lc,size=8) for axi in ax[:2]]
+[axi.text(.25,35,'K-59\nVp (km/s)', ha='center', c=lc,size=8) for axi in ax[:2]]
 
 'M13 vs 5C-06'
+sf_0506 = np.genfromtxt(sf_files['ARA05C_06'], delimiter=',')
+sf_0506[np.isnan(sf_0506)] = 0
+sf_idx = np.argmin(np.abs(sf_0506[:,4] - nearcmp['M13_0506']))
 ax[2].imshow(data['ARA05C_06']['vp'][:160,M13_5C06-5:M13_5C06+5],aspect='auto',vmin=1.4,vmax=3.5,
-             extent=[0,0.5,400,0],cmap='jet')
+             extent=[0,0.5,400,0],cmap='jet',interpolation='bilinear')
+ax[2].plot([0.25,0.25],[57,171],lw=1,c='k',ls='--')
 temp = (2*(vps['M13']-1.4)/(3.7-1.4)-1)*.2+.25
 ax[2].plot(temp,ys['M13'],lc)
+ax[2].plot([0,.5], [sf_0506[sf_idx,3], sf_0506[sf_idx,3]],'grey',ls='--',lw=.75)
 
 'M13 vs 4C-10'
+sf_0410 = np.genfromtxt(sf_files['ARA04C_10'], delimiter=',')
+sf_0410[np.isnan(sf_0410)] = 0
+sf_idx = np.argmin(np.abs(sf_0410[:,4] - nearcmp['M13_0410']))
 ax[3].imshow(data['ARA04C_10']['vp'][:160,M13_4C10-5:M13_4C10+5],aspect='auto',vmin=1.4,vmax=3.5,
-             extent=[0,0.5,400,0],cmap='jet')
+             extent=[0,0.5,400,0],cmap='jet',interpolation='bilinear')
+ax[3].plot([0.25,0.25],[57,171],lw=1,c='k',ls='--')
 ax[3].plot(temp,ys['M13'],lc)
-[axi.text(.05,75,'1.4\n|', ha='center', c=lc,size=8) for axi in ax[2:4]]
-[axi.text(.45,75,'3.7\n|', ha='center', c=lc,size=8) for axi in ax[2:4]]
+ax[3].plot([0,.5], [sf_0410[sf_idx,3], sf_0410[sf_idx,3]],'grey',ls='--',lw=.75)
+[axi.text(.05,85,'|\n1.4', ha='center', c=lc,size=8) for axi in ax[2:4]]
+[axi.text(.45,85,'|\n3.7', ha='center', c=lc,size=8) for axi in ax[2:4]]
 [axi.text(.25,35,'M-13\nVp (km/s)', ha='center', c=lc,size=8) for axi in ax[2:4]]
 #
 'B35 vs 5C-17'
+sf_0517 = np.genfromtxt(sf_files['ARA05C_17'], delimiter=',')
+sf_0517[np.isnan(sf_0517)] = 0
+sf_idx = np.argmin(np.abs(sf_0517[:,4] - nearcmp['B35_0517']))
 ax[4].imshow(data['ARA05C_17']['vp'][:160,B35_5C17-5:B35_5C17+5],aspect='auto',vmin=1.4,vmax=3.5,
-             extent=[0,0.5,400,0],cmap='jet')
+             extent=[0,0.5,400,0],cmap='jet',interpolation='bilinear')
+ax[4].plot([0.25,0.25],[56,101.8],lw=1,c='k',ls='--')
 temp = (2*(vps['B35']-1.4)/(3.7-1.4)-1)*.2+.25
 ax[4].plot(temp,ys['B35'],lc)
+ax[4].plot([0,.5], [sf_0517[sf_idx,3], sf_0517[sf_idx,3]],'grey',ls='--',lw=.75)
 #
 'B35 vs 5C-03'
+sf_0503 = np.genfromtxt(sf_files['ARA05C_03'], delimiter=',')
+sf_0503[np.isnan(sf_0503)] = 0
+sf_idx = np.argmin(np.abs(sf_0503[:,4] - nearcmp['B35_0503']))
 ax[5].imshow(data['ARA05C_03']['vp'][:160,B35_5C03-5:B35_5C03+5],aspect='auto',vmin=1.4,vmax=3.5,
-             extent=[0,0.5,400,0],cmap='jet')
+             extent=[0,0.5,400,0],cmap='jet',interpolation='bilinear')
+ax[5].plot([0.25,0.25],[56,101.8],lw=1,c='k',ls='--')
 ax[5].plot(temp,ys['B35'],lc)
+ax[5].plot([0,.5], [sf_0503[sf_idx,3], sf_0503[sf_idx,3]],'grey',ls='--',lw=.75)
 #
 'B35 vs 4C-01'
+sf_0401 = np.genfromtxt(sf_files['ARA04C_01'], delimiter=',')
+sf_0401[np.isnan(sf_0401)] = 0
+sf_idx = np.argmin(np.abs(sf_0401[:,4] - nearcmp['B35_0401']))
 im = ax[6].imshow(data['ARA04C_01']['vp'][:160,B35_5C03-5:B35_5C03+5],aspect='auto',vmin=1.4,vmax=3.5,
-             extent=[0,0.5,400,0],cmap='jet')
+             extent=[0,0.5,400,0],cmap='jet',interpolation='bilinear')
+ax[6].plot([0.25,0.25],[56,101.8],lw=1,c='k',ls='--')
 ax[6].plot(temp,ys['B35'],lc)
+ax[6].plot([0,.5], [sf_0401[sf_idx,3], sf_0401[sf_idx,3]],'grey',ls='--',lw=.75)
 [axi.text(.05,75,'1.4\n|', ha='center', c=lc,size=8) for axi in ax[4:]]
 [axi.text(.45,75,'3.7\n|', ha='center', c=lc,size=8) for axi in ax[4:]]
 [axi.text(.25,35,'B-35\nVp (km/s)', ha='center', c=lc,size=8) for axi in ax[4:]]
 
-cbar_ax = fig.add_axes([0.805,-0.05,0.1,0.03])
+cbar_ax = fig.add_axes([0.805,-0.075,0.1,0.03])
 cbar = fig.colorbar(im,cax=cbar_ax,orientation='horizontal')
 cbar.set_label('$V_P$ (km/s)', fontsize=8)
 cbar.set_ticks([2,3])

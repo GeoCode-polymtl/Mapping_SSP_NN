@@ -5,7 +5,7 @@ Mapping the distribution of subsea permafrost is a key step for understanding it
 
 This repository follows the code and results in "Mapping subsea permafrost distribution in the Canadian Beaufort Sea with marine seismic and deep learning" submitted to JGR: Solid Earth. This work extends the work of [Bustamante et al. 2024](#1) by evaluating the NN in 15 seismic lines from the ARA04C and ARA05C surveys in the Beaufort Sea [(Kang et al. 2023)](#2). The distribution of the seismic lines is shown in the following figure: 
 
-![FigureMap](code/figs/Figure_Map.png)
+![FigureMap](code/figs/Figure_Map2.png)
 
 In addition, following predefined thresholds, this repository calculate the permafrost distribution in all the seismic lines as described in the paper.
 
@@ -66,7 +66,7 @@ The output velocity models and and the resulting interpretation can be easily pl
 
 The prediction at the intersection between different seismic lines is shown in the following figure. To reproduce this figure, run
 * `python Figure_Intersects.py`
-![Intersects](code/figs/Figure_Intersects.png)
+![Intersects](code/figs/Figure_Intersects2.png)
 
 Finally, The next figure compares the inverted P-wave velocity models with crystal cable logs collected in wells close to
 the seismic lines. To reproduce this figure, run
